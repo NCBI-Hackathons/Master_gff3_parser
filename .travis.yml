@@ -1,0 +1,17 @@
+language: python
+python:
+- '2.7'
+- '3.6'
+
+before_install:
+- pip install pytest
+- pip install six
+- pip install coveralls
+- pip install pytest-cov
+- python setup.py develop
+
+script:
+- py.test --cov-report=term --cov=cli tests
+
+after_success:
+- coveralls
