@@ -76,7 +76,7 @@ import optparse
 
 
 
-def get_mapper(p_assemblyreport, inst_from, inst_to):
+def get_mapper(p_assemblyreport, id_from=None, id_to='sn'):
     """
     Get correspondance of id provided by user
     use sn, gb, rs, au, uc as id descriptor
@@ -86,6 +86,8 @@ def get_mapper(p_assemblyreport, inst_from, inst_to):
     7, rs, RefSeq-Accn
     8, au, Assembly-Unit
     10, uc, UCSC-style-name
+
+    if id_from is not given, we store all possibility to guess the from
 
 
     NCBI report assembly file example:
@@ -97,8 +99,8 @@ def get_mapper(p_assemblyreport, inst_from, inst_to):
 
 
     :param p_assemblyreport: p_assembly_report path to the input assembly report file
-    :param inst_from: institution id use sn, gb, rs, au, uc
-    :param inst_to: instituion id use sn, gb, rs, au, uc
+    :param id_from: institution id use sn, gb, rs, au, uc
+    :param id_to: instituion id use sn, gb, rs, au, uc
     :return: d_from2to [id from] -> id to
     """
 
@@ -108,8 +110,14 @@ def get_mapper(p_assemblyreport, inst_from, inst_to):
                  'rs':6,
                  'au':7,
                  'uc':10}
-    from_col = inst2col[inst_from]
-    to_col = inst2col[inst_to]
+    to_col = inst2col[id_to]
+
+    if id_from:
+        from_col = inst2col[id_from]
+    else:
+        # storage of all possibility
+        # TODO
+        pass
 
 
     d_from2to = {}
