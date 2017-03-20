@@ -1,53 +1,83 @@
 import sys
 import argparse
 from . import _program
-from clint.textui import puts, indent, colored
+from clint.textui import puts, puts_err, indent, colored
+
+
+def read_file(input):
+    return input
+
+
+class comm(object):
+
+    def __init__(self):
+        parser = argparse.ArgumentParser(
+            description='Sequence ID Conversion',
+            usage='''seqconv <command> [<args>]
+
+Commands
+   convert     Convert sequence identifiers
+   resolve     Attempt to identify the reference genome.
+''')
+        parser.add_argument('command', help='Subcommand to run')
+        sub_comm = sys.argv[1:2]
+        args = parser.parse_args(sub_comm)
+        if not hasattr(self, args.command):
+            with indent(4):
+                puts_err(colored.red("\n%s: Unrecognized command\n" % sub_comm[0]))
+            exit(1)
+        getattr(self, args.command)()
+
+    def convert(self):
+        parser = argparse.ArgumentParser(
+            description='Record changes to the repository',
+            usage='''seqconv convert [--ref <reference> --in <input-id>] --out <output-id> <file>
+
+Commands
+   convert     Convert sequence identifiers
+
+''')
+        # prefixing the argument with -- means it's optional
+        parser.add_argument('--ref', type=str, default=None)
+        parser.add_argument('--in', type=str)
+        parser.add_argument('--out', type=str)
+        parser.add_argument('<file>', type=read_file)          
+
+        with indent(4):
+            puts_err(colored.blue("\nConverting IDs\n"))
+
+        args = parser.parse_args(sys.argv[2:])
+
+        if not args.ref:
+            # Resolve reference code goes here.
+            pass
+
+        # Code for checking input/output formats goes here!
+
+        print(args)
+
+        # Code for transforming goes here!
+
+    def resolve(self):
+        parser = argparse.ArgumentParser(
+            description='Download objects and refs from another repository',
+            usage='''seqconv resolve <file>
+
+Attempt to identify the reference genome given a GFF, BED, or SAM/BAM.
+
+''')
+        parser.add_argument('<file>', type=read_file)
+        with indent(4):
+            puts_err(colored.blue("\nAttempting to identify reference genome\n"))
+        args = parser.parse_args(sys.argv[2:])
+
+        # Code for identifying reference goes here!
+
+
+
 
 def main(args = sys.argv[1:]):
-    parser = argparse.ArgumentParser(prog = _program)
-
-    parser.add_argument("--square",
-                        help="Used for testing",
-                        type=int,
-                        default=None)
-
-    parser.add_argument("--int_value",
-                        help="display a square of a given number",
-                        type=int)
-
-    parser.add_argument("--float_value",
-                        help="display a square of a given number",
-                        type=int)
-
-    parser.add_argument("-f",
-                        "--flag",
-                        help="Specify a flag",
-                        action="store_true")
-    parser.add_argument("--rating",
-                        help="An option with a limited range of values",
-                        choices=[1, 2, 3],
-                        type=int)
-
-    # Allow --day and --night options, but not together.
-    group = parser.add_mutually_exclusive_group()
-    group.add_argument("--day",
-                       help = "mutually exclusive option",
-                       action = "store_true")
-    group.add_argument("--night",
-                       help = "mutually exclusive option",
-                       action = "store_true")
-
-    args = parser.parse_args(args)
-
-    if args.square:
-        print(args.square**2)
-    else:
-        with indent(4):
-            puts(colored.blue("Arguments"))
-            puts(colored.green("int value: ") + str(args.int_value))
-            puts(colored.green("float value: ") + str(args.float_value))
-            puts(colored.green("flag: ") + str(args.flag))
-            puts(colored.green("rating: ") + str(args.rating))
+    comm()
 
 if __name__ == '__main__':
     main()
