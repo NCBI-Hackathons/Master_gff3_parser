@@ -1,4 +1,5 @@
 import sys
+import os
 import argparse
 from . import _program
 from cli.assembly import *
@@ -64,7 +65,6 @@ class comm(object):
         sys.stderr.write(bcolors.BLUE + "\nConverting IDs\n" + bcolors.ENDC)
             
         args = parser.parse_args(sys.argv[2:])
-        print(args)
         if not args.ref:
             # Resolve reference code goes here.
             pass
@@ -76,6 +76,8 @@ class comm(object):
             fout = file_from_stream(sys.stdin)
             col_number = fout.id_column
         else:
+            if not os.path.isfile(fname):
+                pass
             fout, col_number = file_from_name(fname)
         
         p_assembly_report = fetch_assembly_report(args.ref)
