@@ -1,24 +1,38 @@
 import re
-import requests
 import os
 import sys
+import requests
 import optparse
-import urllib.request
+#import urllib.request
 
+# Managing python version
+if sys.version_info >= (3,0):
+    from urllib.request import urlopen # Python3
+else:
+    from urllib2 import urlopen # Python 2
+
+
+
+
+##### FUNCTIONS
 def fetch_assembly_report(assembly):
     """
         Fetch an assembly report from an assembly name
     """
-    # if sys.version_info >= (3,0):
-    #     urllib.request.urlopen()
-    # else:
-    #     pass
 
     search_url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=assembly&term={assembly}[Assembly%20Name]"
-    r = requests.get(search_url.format(assembly = assembly)).text
+
+    with urlopen(search_url.format(assembly=assembly)) as response:
+            r = str(response.read())
+
     id_set = list(map(int, re.findall("<Id>(.*)</Id>", r))) # cast as list python 3.5
     fetch_url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=assembly&id={id}"
-    r = requests.get(fetch_url.format(id = id_set[0])).text
+    #r = requests.get(fetch_url.format(id = id_set[0])).text
+    with urlopen(fetch_url.format(id=id_set[0])) as response:
+            r = str(response.read())
+
+    re.findall("<FtpPath_Assembly_rpt>(.*)</FtpPath_Assembly_rpt>", r)
+
     GCF_assembly_report_url = re.findall("<FtpPath_Assembly_rpt>(.*)</FtpPath_Assembly_rpt>", r)[0]
     return GCF_assembly_report_url.replace("ftp://", "http://")
 
@@ -51,6 +65,7 @@ def get_mapper(p_assemblyreport, id_from=None, id_to='sn'):
     :return: d_from2to [id from] -> id to
     """
 
+    print ('from', id_from, 'to', id_to)
     # find correct colum for convertion
     id2col = {'sn':0,
                  'gb':5,
@@ -69,8 +84,12 @@ def get_mapper(p_assemblyreport, id_from=None, id_to='sn'):
 
 
     d_from2to = {}
-    with open(p_assemblyreport)as f:
+
+    # Fetch assembly_report to NCBI
+    with urlopen(p_assemblyreport) as f:
+    #with open(p_assemblyreport)as f:
         for line in f:
+            line = line.decode("utf-8")
             if line.startswith('#'):
                 continue
 
@@ -86,6 +105,10 @@ def get_mapper(p_assemblyreport, id_from=None, id_to='sn'):
             if id_from:
                 cur_id_from = sp[from_col]
                 d_from2to[cur_id_from] = [id_to, id_from]
+
+                print (sp)
+                print (cur_id_from, id_to)
+                sys.exit()
 
             # guessing mode
             else:
@@ -106,17 +129,17 @@ def get_mapper(p_assemblyreport, id_from=None, id_to='sn'):
     return d_from2to
 
 
-def convert(p_gff3, d_mapper, p_output, guess=False):
+def convert(p_gff3, d_mapper, p_output, guess=None):
     """
 
     :param p_gff3: path to input gff3 file
     :param d_mapper: [idtoconvert] -> idconverted
     :param na: manage the way to output the line if id_to point to NA
-    :param guess: if True we try to detect the id format
     :return: None
 
     """
 
+    print ('STARTING CONVERTION')
 
     with open(p_output, 'w') as fout:
 
@@ -143,6 +166,8 @@ def convert(p_gff3, d_mapper, p_output, guess=False):
                         idconverted, id_format = d_mapper[idtoconvert]
                     except:
                         print ('Can find idtoconvert in the mapper', idtoconvert)
+                        print (line)
+                        sys.exit()
                         # TODO write a log file
                         continue
 
@@ -158,7 +183,7 @@ def convert(p_gff3, d_mapper, p_output, guess=False):
                         continue
 
                     # output format
-                    str_gff = '##sequence-region {seqid} {eol}'.format(seqid = current_idto, eol=' '.join(sp[2:]))
+                    str_gff = '##sequence-region {seqid} {eol}\n'.format(seqid = current_idto, eol=' '.join(sp[2:]))
 
                 elif line.startswith('#'):
                     str_gff = line
@@ -222,6 +247,7 @@ def converter(p_assemblyreport, id_from, id_to, p_gff3, p_output):
 
     # apply the mapp to convert the gff3
     if not id_from:
+        print (os.getcwd(), p_gff3)
         convert(p_gff3, d_mapper, p_output, guess=True)
     else:
         convert(p_gff3, d_mapper, p_output)
@@ -230,35 +256,35 @@ def converter(p_assemblyreport, id_from, id_to, p_gff3, p_output):
 
 if __name__== '__main__':
 
-    ### TESTING
+    ### TESTING AREA
     #
+
+    # USER PROVIDE ASSEMBLY NAME
     assembly_name = 'GRCh38'
-    id_from = None
-    id_to = 'oc'
-    p_gff3 = ''
+
+    # ID FROM CAN BE GUESSED IS NONE
+    id_from = 'sn'
+
+    # ID TO IS THE FORMAT CONVERTION DESIRED
+    id_to = 'rs'
+
+    # GFF3 FILE INPUT
+    p_gff3 = 'GCF_000001405.36_GRCh38.p10_genomic.gff'
+
+    # OUTPUT FILE
+    p_output = 'converted.gff3'
 
 
+    #### CORE
+
+    # GET ASSEMBLY REPORT
     p_assembly_report = fetch_assembly_report(assembly_name)
 
-    # assembly report
-    # http://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.26_GRCh38/GCF_000001405.26_GRCh38_assembly_report.txt
-
-    # generate the path to gff3
-    # https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.26_GRCh38/GCF_000001405.26_GRCh38_genomic.gff.gz
-    ## gff3 is provided by the users!!
-    p_gff3 = p_assembly_report.split('_assembly_report.txt')[0]+ '_genomic.gff.gz'
-
-
-
     # TODO downloading assembly_report
-    # TODO switch from requests to urllib
-    # TODO detect python2 vs python3 to adapt urllib
+    converter(p_assembly_report, \
+              id_from=id_from, \
+              id_to=id_to, \
+              p_gff3=p_gff3, \
+              p_output=p_output)
 
 
-
-
-    print (p_assembly_report, p_gff3)
-
-
-
-    pass
