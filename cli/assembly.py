@@ -65,7 +65,7 @@ def get_mapper(p_assemblyreport, id_from=None, id_to='sn'):
     :return: d_from2to [id from] -> id to
     """
 
-    print ('from', id_from, 'to', id_to)
+    sys.stderr.write('from {} to {}'.format(id_from,id_to))
     # find correct colum for convertion
     id2col = {'sn':0,
                  'gb':5,
@@ -130,7 +130,7 @@ def get_mapper(p_assemblyreport, id_from=None, id_to='sn'):
     return d_from2to
 
 
-def convert(f_input, d_mapper, pos_col, p_output, guess=None):
+def convert(f_input, d_mapper, pos_col, guess=None):
     """
 
     :param p_gff3: path to input gff3 file
@@ -141,88 +141,88 @@ def convert(f_input, d_mapper, pos_col, p_output, guess=None):
 
     """
 
-    print ('STARTING CONVERTION')
+    sys.stderr.write('STARTING CONVERTION\n')
 
-    with open(p_output, 'w') as fout:
 
-        # recall key to reduce time
-        current_idfrom = None
-        current_idto = None
-        length_idfrom = None
-        current_format = None
 
-        for line in f_input:
+    # recall key to reduce time
+    current_idfrom = None
+    current_idto = None
+    length_idfrom = None
+    current_format = None
 
-            # comment lines => no convertion
-            if line.startswith('# '):
-                str_gff = line
+    for line in f_input:
 
-            # ##sequence-region line
-            # TODO scan only if gff3?
-            elif line.startswith('##sequence-region'):
-                sp = line.strip().split()
-                idtoconvert = sp[1]
+        # comment lines => no convertion
+        if line.startswith('# '):
+            str_gff = line
 
-                # if can't mapp we skip the line
+        # ##sequence-region line
+        # TODO scan only if gff3?
+        elif line.startswith('##sequence-region'):
+            sp = line.strip().split()
+            idtoconvert = sp[1]
+
+            # if can't mapp we skip the line
+            try:
+                idconverted, id_format = d_mapper[idtoconvert]
+            except:
+                sys.stderr.write('Cannot find idtoconvert in the mapper {0}\n'.format(idtoconvert))
+                continue
+
+            current_idfrom = idtoconvert
+            current_idto = idconverted
+            length_idfrom = len(current_idfrom)
+            current_format = id_format
+
+
+            # if mapp to an NA we skip the line
+            if idconverted.lower() == 'na':
+                sys.stderr.write('No corresponding to {0} in {1}\n'.format(current_idfrom, current_format))
+                continue
+
+            # output format
+            str_gff = '##sequence-region {seqid} {eol}\n'.format(seqid = current_idto, eol=' '.join(sp[2:]))
+
+        elif line.startswith('#'):
+            str_gff = line
+
+        # coord lines ==> convertion
+        else:
+            sp = line.strip().split('\t')
+            # check if previous line has the same accession to avoid another dictionary search
+            if current_idfrom == line[:length_idfrom]:
+                idconverted = current_idto
+            else:
+                idtoconvert = sp[pos_col] # pos_col is 0 based
+
                 try:
                     idconverted, id_format = d_mapper[idtoconvert]
                 except:
-                    sys.stderr.write('Cannot find idtoconvert in the mapper {0}\n'.format(idtoconvert), file=sys.stderr)
+                    sys.stderr.write('Cannot find idtoconvert in the mapper {0}\n'.format(idtoconvert))
                     continue
 
                 current_idfrom = idtoconvert
                 current_idto = idconverted
-                length_idfrom = len(current_idfrom)
-                current_format = id_format
+                length_idfrom = len(idtoconvert)
 
-
-                # if mapp to an NA we skip the line
-                if idconverted.lower() == 'na':
-                    sys.stderr.write('No corresponding to {0} in {1}\n'.format(current_idfrom, current_format))
-                    continue
-
-                # output format
-                str_gff = '##sequence-region {seqid} {eol}\n'.format(seqid = current_idto, eol=' '.join(sp[2:]))
-
-            elif line.startswith('#'):
-                str_gff = line
-
-            # coord lines ==> convertion
-            else:
-                sp = line.strip().split('\t')
-                # check if previous line has the same accession to avoid another dictionary search
-                if current_idfrom == line[:length_idfrom]:
-                    idconverted = current_idto
-                else:
-                    idtoconvert = sp[pos_col] # pos_col is 0 based
-
-                    try:
-                        idconverted, id_format = d_mapper[idtoconvert]
-                    except:
-                        sys.stderr.write('Cannot find idtoconvert in the mapper {0}\n'.format(idtoconvert))
-                        continue
-
-                    current_idfrom = idtoconvert
-                    current_idto = idconverted
-                    length_idfrom = len(idtoconvert)
-
-                if idconverted.lower() == 'na':
-                    sys.stderr.write('No corresponding to {0} in {1}\n'.format(idtoconvert, id_format))
-                    continue
+            if idconverted.lower() == 'na':
+                sys.stderr.write('No corresponding to {0} in {1}\n'.format(idtoconvert, id_format))
+                continue
 
 
 
-                # output format
-                sp[pos_col] = idconverted
-                str_gff = '\t'.join(sp)+'\n'
+            # output format
+            sp[pos_col] = idconverted
+            str_gff = '\t'.join(sp)+'\n'
 
-                #str_gff ='{seqid}\t{eol}'.format(seqid=idconverted, eol=line[length_idfrom:])
+            #str_gff ='{seqid}\t{eol}'.format(seqid=idconverted, eol=line[length_idfrom:])
 
-            # final output writing
-            fout.write (str_gff)
+        # final output writing
+        sys.stdout.write(str_gff)
 
     if guess:
-        print ('FORMAT detected: ', id_format)
+        sys.stderr.write('FORMAT detected: {}'.format(id_format))
     return None
 
 def converter(p_assemblyreport=None,\
@@ -251,16 +251,14 @@ def converter(p_assemblyreport=None,\
 
     # apply the mapp to convert the gff3
     if not id_from:
-        convert(f_input=f_input, \
-                pos_col=pos_col, \
-                d_mapper=d_mapper, \
-                p_output=p_output, \
+        convert(f_input=f_input,
+                pos_col=pos_col,
+                d_mapper=d_mapper,
                 guess=True)
     else:
-                convert(f_input=f_input, \
-                pos_col=pos_col, \
-                d_mapper=d_mapper, \
-                p_output=p_output, \
+                convert(f_input=f_input,
+                pos_col=pos_col,
+                d_mapper=d_mapper,
                 guess=False)
 
     return None
