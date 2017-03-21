@@ -8,7 +8,7 @@ before_install:
 - pip install coveralls
 - pip install pytest-cov
 - pip install mkdocs
-- mkdocs gh-pages
+- mkdocs gh-deploy
 - python setup.py develop
 script:
 - py.test --cov-report=term --cov=cli tests
