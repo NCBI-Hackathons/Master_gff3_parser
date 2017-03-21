@@ -17,8 +17,17 @@ seqconv contact | Feature requests, bugs, mailing lists
 
 ### Installation
 
+Linux:
+
 ```
 some lines of code go here and then something happens
 ```
+
+OSX:
+
+```
+some lines of code go here and then something happens
+```
+
 ![SeqIDMapper Workflow:](https://github.com/NCBI-Hackathons/Master_gff3_parser/blob/master/seqidmapper.png?raw=true)
 Figure 1. SeqIDMapper workflow.
