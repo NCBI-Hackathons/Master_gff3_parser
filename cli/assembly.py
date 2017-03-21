@@ -4,12 +4,16 @@ import sys
 import optparse
 
 
+# TODO debug python2x
+# TODO full name of id format
+
 
 # Managing python version
 if sys.version_info >= (3,0):
     from urllib.request import urlopen # Python3
 else:
     from urllib2 import urlopen # Python 2
+
 
 
 
@@ -22,14 +26,20 @@ def fetch_assembly_report(assembly):
 
     search_url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=assembly&term={assembly}[Assembly%20Name]"
 
-    with urlopen(search_url.format(assembly=assembly)) as response:
-            r = str(response.read())
+    # with does not work with python2 ==> remooving all with
+    response = urlopen(search_url.format(assembly=assembly))
+    r = str(response.read())
+    # with urlopen(search_url.format(assembly=assembly)) as response:
+    #         r = str(response.read())
 
     id_set = list(map(int, re.findall("<Id>(.*)</Id>", r))) # cast as list python 3.5
     fetch_url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=assembly&id={id}"
     #r = requests.get(fetch_url.format(id = id_set[0])).text
-    with urlopen(fetch_url.format(id=id_set[0])) as response:
-            r = str(response.read())
+
+    response = urlopen(fetch_url.format(id=id_set[0]))
+    r = str(response.read())
+    # with urlopen(fetch_url.format(id=id_set[0])) as response:
+    #         r = str(response.read())
 
     re.findall("<FtpPath_Assembly_rpt>(.*)</FtpPath_Assembly_rpt>", r)
 
@@ -87,10 +97,12 @@ def get_mapper(p_assemblyreport, id_from=None, id_to='sn'):
 
 
     # Fetch assembly_report to NCBI
-    with urlopen(p_assemblyreport) as f:
+    f = urlopen(p_assemblyreport)
+    # with statement does not work with python2
+    #with urlopen(p_assemblyreport) as f:
     #with open(p_assemblyreport)as f:
 
-
+    if True:
         for line in f:
             line = line.decode("utf-8")
 
