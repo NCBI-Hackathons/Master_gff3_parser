@@ -261,7 +261,7 @@ if __name__== '__main__':
     # USER PROVIDE ASSEMBLY NAME
     assembly_name = 'GRCh38'
 
-    # ID FROM CAN BE GUESSED IS NONE
+    # ID FROM CAN BE GUESSED IS None
     id_from = None
 
     # ID TO IS THE FORMAT CONVERTION DESIRED
@@ -269,6 +269,11 @@ if __name__== '__main__':
 
     # GFF3 FILE INPUT
     p_gff3 = 'GCF_000001405.36_GRCh38.p10_genomic.gff'
+    # new format => this is a file object
+    f_gff3 = open(p_gff3)
+
+    # Column number
+    pos_col = 1
 
     # OUTPUT FILE
     p_output = 'converted.gff3'
@@ -280,6 +285,17 @@ if __name__== '__main__':
     p_assembly_report = fetch_assembly_report(assembly_name)
 
     # TODO downloading assembly_report
+
+
+    # TODO start from a file object
+    # TODO manage every column given by users to convert
+    # converter(p_assemblyreport=p_assembly_report,\
+    #           f_input='',\
+    #           pos_col=pos_col,
+    #           id_from=id_from,
+    #           id_to=id_to)
+
+
     converter(p_assembly_report, \
               id_from=id_from, \
               id_to=id_to, \
