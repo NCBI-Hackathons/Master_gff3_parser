@@ -109,7 +109,7 @@ def get_mapper(p_assemblyreport, id_from=None, id_to='sn'):
                  'gb':5,
                  'rs':6,
                  'au':7,
-                 'uc':10}
+                 'uc':9}
     to_col = id2col[id_to]
 
     # format specified by user
@@ -127,7 +127,7 @@ def get_mapper(p_assemblyreport, id_from=None, id_to='sn'):
             if line.startswith('#'):
                 continue
 
-            sp = line.split()
+            sp = line.split('\t')
 
 
             try:
@@ -139,6 +139,7 @@ def get_mapper(p_assemblyreport, id_from=None, id_to='sn'):
             if id_from:
                 cur_id_from = sp[from_col]
                 d_from2to[cur_id_from] = [id_to, id_from]
+
             # guessing mode
             else:
                 for ite_id_from in l_id_from:
@@ -154,10 +155,11 @@ def get_mapper(p_assemblyreport, id_from=None, id_to='sn'):
 
 
 
+
     return d_from2to
 
 
-def convert(p_gff3, d_mapper, p_output, na=True, guess=False):
+def convert(p_gff3, d_mapper, p_output, guess=False):
     """
 
     :param p_gff3: path to input gff3 file
@@ -176,6 +178,7 @@ def convert(p_gff3, d_mapper, p_output, na=True, guess=False):
             current_idfrom = None
             current_idto = None
             length_idfrom = None
+            current_format = None
 
             for line in f:
 
@@ -187,13 +190,28 @@ def convert(p_gff3, d_mapper, p_output, na=True, guess=False):
                 elif line.startswith('##sequence-region'):
                     sp = line.split()
                     idtoconvert = sp[1]
-                    idconverted, id_format = d_mapper[idtoconvert]
+
+                    # if can't mapp we skip the line
+                    try:
+                        idconverted, id_format = d_mapper[idtoconvert]
+                    except:
+                        print ('Can find idtoconvert in the mapper', idtoconvert)
+                        # TODO write a log file
+                        continue
+
                     current_idfrom = idtoconvert
                     current_idto = idconverted
                     length_idfrom = len(current_idfrom)
+                    current_format = id_format
+
+                    # if mapp to an NA we skip the line
+                    if idconverted == 'NA':
+                        print ('No corresponding to {0} in {1}'.format(current_idfrom, current_format))
+                        # TODO write a log file
+                        continue
 
                     # output format
-                    str_gff = '##sequence-region {seqid} {eol}'.format(seqid = idconverted, eol=' '.join(sp[2:]))
+                    str_gff = '##sequence-region {seqid} {eol}'.format(seqid = current_idto, eol=' '.join(sp[2:]))
 
                 elif line.startswith('#'):
                     str_gff = line
@@ -206,10 +224,24 @@ def convert(p_gff3, d_mapper, p_output, na=True, guess=False):
                     else:
                         sp = line.split('\t')
                         idtoconvert = sp[0]
-                        idconverted, id_format = d_mapper[idtoconvert]
+
+                        try:
+                            idconverted, id_format = d_mapper[idtoconvert]
+                        except:
+                            # TODO write a log file
+                            print ('Can find idtoconvert in the mapper', idtoconvert)
+                            continue
+
                         current_idfrom = idtoconvert
                         current_idto = idconverted
                         length_idfrom = len(idtoconvert)
+
+                    if idconverted == 'NA':
+                        # TODO write a log file
+                        print ('No corresponding to {} in {}'.format(idtoconvert, id_format))
+                        continue
+
+
 
                     # output format
                     str_gff ='{seqid}\t{eol}'.format(seqid=idconverted, eol=line[length_idfrom:])
