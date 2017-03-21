@@ -12,7 +12,7 @@ seqconv guess | Infers file type
 seqconv convert | Converts sequence IDs
 seqconv help | Print help menu
 seqconv version | What version of SeqIDMapper
-seqconv contact | Feature requests, begs, mailing lists
+seqconv contact | Feature requests, bugs, mailing lists
 
 
 ### Installation
@@ -21,3 +21,4 @@ seqconv contact | Feature requests, begs, mailing lists
 some lines of code go here and then something happens
 ```
 ![SeqIDMapper Workflow:](https://github.com/NCBI-Hackathons/Master_gff3_parser/blob/master/seqidmapper.png?raw=true)
+Figure 1. SeqIDMapper workflow.
