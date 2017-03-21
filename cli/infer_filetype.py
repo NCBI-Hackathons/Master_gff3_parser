@@ -27,7 +27,7 @@ def check_header(header):
             format = 'gtf'
         elif check_bed_file_format(header) is True:
             format = 'bed'
-    print format
+#    print format
     return format
 
 
@@ -59,7 +59,7 @@ def check_gff3_file_format(header):
 def check_bed_file_format(header):
     status = False
     cols = check_num_of_columns(header)
-    print cols
+    print (cols)
     if cols >= 3 and cols <= 12:
         status = True
     return status
@@ -73,7 +73,7 @@ def check_gtf_file_format(header):
 
 def get_header(file):
     head = ''
-    print file
+    print (file)
     with open(file) as myfile:
         head = list(islice(myfile, 100))
     return head
@@ -85,26 +85,26 @@ def infer_type(input_file):
         if ext == 'gff3' or ext =='gff':
             gff3_status = check_gff3_file_format(header)
             if gff3_status == True:
-                print "%s passes as gff.  Replace IDs in column 1" % (input_file)
+                print ("%s passes as gff.  Replace IDs in column 1", input_file)
         elif ext == 'gtf':
             gtf_status = check_gtf_file_format(header)
             if gtf_status is True:
-                print "%s passes as gtf.  Replace IDs in column 1" % (input_file)
+                print ("%s passes as gtf.  Replace IDs in column 1", input_file)
 #### Need bedfile for testing
         elif ext =='bed':
-            print 'bed'
+            print ('bed')
             check_bed_file_format(header)
 ####
         elif ext =='sam':
-            print 'sam'
+            print ('sam')
 #        else:
 #            print "Filetype %s is not supported" %(ext)                
         header_format = check_header(header)
         if header_format == "NA":
-            print error
+            print (error)
         else:
-            print "processing header"
-            print header_format
+            print ("processing header")
+            print (header_format)
 
 def main(args = sys.argv[1:]):
     parser = argparse.ArgumentParser()

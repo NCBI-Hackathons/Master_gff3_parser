@@ -1,7 +1,7 @@
 import sys
 import argparse
 from . import _program
-from clint.textui import puts, puts_err, indent, colored
+from shell import bcolors
 
 def read_file(input):
     return input
@@ -22,8 +22,7 @@ Commands
         sub_comm = sys.argv[1:2]
         args = parser.parse_args(sub_comm)
         if not hasattr(self, args.command):
-            with indent(4):
-                puts_err(colored.red("\n%s: Unrecognized command\n" % sub_comm[0]))
+            sys.stderr.write(bcolors.FAIL + "\n\t%s: Unrecognized command\n" % sub_comm[0] + bcolors.ENDC)
             exit(1)
         getattr(self, args.command)()
 
@@ -42,9 +41,8 @@ Commands
         parser.add_argument('--out', type=str)
         parser.add_argument('<file>', type=read_file)          
 
-        with indent(4):
-            puts_err(colored.blue("\nConverting IDs\n"))
-
+        sys.stderr.write(bcolors.BLUE + "\nConverting IDs\n" + bcolors.ENDC)
+            
         args = parser.parse_args(sys.argv[2:])
 
         if not args.ref:
@@ -66,8 +64,7 @@ Attempt to identify the reference genome given a GFF, BED, or SAM/BAM.
 
 ''')
         parser.add_argument('<file>', type=read_file)
-        with indent(4):
-            puts_err(colored.blue("\nAttempting to identify reference genome\n"))
+        sys.stderr.write(bcolors.BLUE + "\n\tAttempting to identify reference genome\n" + bcolors.ENDC)
         args = parser.parse_args(sys.argv[2:])
 
         # Code for identifying reference goes here!
