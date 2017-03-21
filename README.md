@@ -15,3 +15,7 @@ seqconv contact | Feature requests, begs, mailing lists
 
 
 ### Installation
+
+```
+some lines of code go here and then something happens
+```
