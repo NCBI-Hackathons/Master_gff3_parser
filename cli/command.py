@@ -2,7 +2,6 @@ import sys
 import argparse
 from . import _program
 from clint.textui import puts, puts_err, indent, colored
-import infer_filetype.py
 
 def read_file(input):
     return input
