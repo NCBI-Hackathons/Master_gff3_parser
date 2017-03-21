@@ -11,5 +11,5 @@ def fetch_assembly_report(assembly):
     fetch_url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=assembly&id={id}"
     r = requests.get(fetch_url.format(id = id_set[0])).text
     GCF_assembly_report_url = re.findall("<FtpPath_Assembly_rpt>(.*)</FtpPath_Assembly_rpt>", r)[0]
-    GCF_assembly_report_url = GCF_assembly_report_url.replace("ftp://", "http://")
-    return requests.get(GCF_assembly_report_url).text
+    return GCF_assembly_report_url.replace("ftp://", "http://")
+    
