@@ -1,10 +1,12 @@
 from cli import command
 from tests.test_utilities import Capturing
+from cli.assembly import fetch_assembly_report
 
-def test_square():
-    with Capturing() as out:
-        result = command.main(['--square', '20'])
-    assert int(out[0]) == 400
+
+def test_fetch_GRCh38():
+    url = fetch_assembly_report("GRCh38")
+    print(url)
+    assert url == "gasdf"
 
 
 
