@@ -1,7 +1,6 @@
 import re
 import os
 import sys
-import requests
 import optparse
 #import urllib.request
 
@@ -85,11 +84,16 @@ def get_mapper(p_assemblyreport, id_from=None, id_to='sn'):
 
     d_from2to = {}
 
+
     # Fetch assembly_report to NCBI
     with urlopen(p_assemblyreport) as f:
     #with open(p_assemblyreport)as f:
+
+
         for line in f:
             line = line.decode("utf-8")
+
+
             if line.startswith('#'):
                 continue
 
@@ -106,9 +110,7 @@ def get_mapper(p_assemblyreport, id_from=None, id_to='sn'):
                 cur_id_from = sp[from_col]
                 d_from2to[cur_id_from] = [id_to, id_from]
 
-                print (sp)
-                print (cur_id_from, id_to)
-                sys.exit()
+
 
             # guessing mode
             else:
@@ -122,8 +124,6 @@ def get_mapper(p_assemblyreport, id_from=None, id_to='sn'):
                         cur_id_from = 'NA'
 
                     d_from2to[cur_id_from] = [id_to, ite_id_from]
-
-
 
 
     return d_from2to
@@ -165,9 +165,8 @@ def convert(p_gff3, d_mapper, p_output, guess=None):
                     try:
                         idconverted, id_format = d_mapper[idtoconvert]
                     except:
-                        print ('Can find idtoconvert in the mapper', idtoconvert)
-                        print (line)
-                        sys.exit()
+                        print ('Cannot find idtoconvert in the mapper', idtoconvert)
+
                         # TODO write a log file
                         continue
 
@@ -201,7 +200,8 @@ def convert(p_gff3, d_mapper, p_output, guess=None):
                             idconverted, id_format = d_mapper[idtoconvert]
                         except:
                             # TODO write a log file
-                            print ('Can find idtoconvert in the mapper', idtoconvert)
+                            print ('Cannot find idtoconvert in the mapper', idtoconvert)
+
                             continue
 
                         current_idfrom = idtoconvert
@@ -247,7 +247,6 @@ def converter(p_assemblyreport, id_from, id_to, p_gff3, p_output):
 
     # apply the mapp to convert the gff3
     if not id_from:
-        print (os.getcwd(), p_gff3)
         convert(p_gff3, d_mapper, p_output, guess=True)
     else:
         convert(p_gff3, d_mapper, p_output)
@@ -263,10 +262,10 @@ if __name__== '__main__':
     assembly_name = 'GRCh38'
 
     # ID FROM CAN BE GUESSED IS NONE
-    id_from = 'sn'
+    id_from = None
 
     # ID TO IS THE FORMAT CONVERTION DESIRED
-    id_to = 'rs'
+    id_to = 'sn'
 
     # GFF3 FILE INPUT
     p_gff3 = 'GCF_000001405.36_GRCh38.p10_genomic.gff'
