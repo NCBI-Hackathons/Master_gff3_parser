@@ -99,25 +99,26 @@ def get_mapper(p_assemblyreport, id_from=None, id_to='sn'):
 
 
     :param p_assemblyreport: p_assembly_report path to the input assembly report file
-    :param id_from: institution id use sn, gb, rs, au, uc
+    :param id_from: institution id use sn, gb, rs, au, uc, is None, guessing mode
     :param id_to: instituion id use sn, gb, rs, au, uc
     :return: d_from2to [id from] -> id to
     """
 
     # find correct colum for convertion
-    inst2col = {'sn':0,
+    id2col = {'sn':0,
                  'gb':5,
                  'rs':6,
                  'au':7,
                  'uc':10}
-    to_col = inst2col[id_to]
+    to_col = id2col[id_to]
 
+    # format specified by user
     if id_from:
-        from_col = inst2col[id_from]
+        from_col = id2col[id_from]
+    # guess format
     else:
-        # storage of all possibility
-        # TODO
-        pass
+        l_id_from = [id for id in id2col if id!= id_from]
+
 
 
     d_from2to = {}
@@ -127,25 +128,44 @@ def get_mapper(p_assemblyreport, id_from=None, id_to='sn'):
                 continue
 
             sp = line.split()
-            print (sp)
+
 
             try:
                 id_to = sp[to_col]
             except:
                 id_to = 'NA'
 
-            id_from = sp[from_col]
+            # user specified the id_from
+            if id_from:
+                cur_id_from = sp[from_col]
+                d_from2to[cur_id_from] = [id_to, id_from]
+            # guessing mode
+            else:
+                for ite_id_from in l_id_from:
+                    cur_from_col = id2col[ite_id_from]
 
-            d_from2to[id_from] = id_to
+
+                    try:
+                        cur_id_from = sp[cur_from_col]
+                    except:
+                        cur_id_from = 'NA'
+
+                    d_from2to[cur_id_from] = [id_to, ite_id_from]
+
+
+
     return d_from2to
 
 
-def convert(p_gff3, d_mapper, p_output):
+def convert(p_gff3, d_mapper, p_output, na=True, guess=False):
     """
 
     :param p_gff3: path to input gff3 file
     :param d_mapper: [idtoconvert] -> idconverted
+    :param na: manage the way to output the line if id_to point to NA
+    :param guess: if True we try to detect the id format
     :return: None
+
     """
 
 
@@ -167,7 +187,7 @@ def convert(p_gff3, d_mapper, p_output):
                 elif line.startswith('##sequence-region'):
                     sp = line.split()
                     idtoconvert = sp[1]
-                    idconverted = d_mapper[idtoconvert]
+                    idconverted, id_format = d_mapper[idtoconvert]
                     current_idfrom = idtoconvert
                     current_idto = idconverted
                     length_idfrom = len(current_idfrom)
@@ -186,7 +206,7 @@ def convert(p_gff3, d_mapper, p_output):
                     else:
                         sp = line.split('\t')
                         idtoconvert = sp[0]
-                        idconverted = d_mapper[idtoconvert]
+                        idconverted, id_format = d_mapper[idtoconvert]
                         current_idfrom = idtoconvert
                         current_idto = idconverted
                         length_idfrom = len(idtoconvert)
@@ -196,6 +216,9 @@ def convert(p_gff3, d_mapper, p_output):
 
                 # final output writing
                 fout.write (str_gff)
+
+    if guess:
+        print ('FORMAT detected: ', id_format)
     return None
 
 def converter(p_assemblyreport, id_from, id_to, p_gff3, p_output):
@@ -219,7 +242,10 @@ def converter(p_assemblyreport, id_from, id_to, p_gff3, p_output):
     d_mapper = get_mapper(p_assemblyreport, id_from, id_to)
 
     # apply the mapp to convert the gff3
-    convert(p_gff3, d_mapper, p_output)
+    if not id_from:
+        convert(p_gff3, d_mapper, p_output, guess=True)
+    else:
+        convert(p_gff3, d_mapper, p_output)
 
     return None
 
@@ -247,11 +273,19 @@ if __name__ == '__main__':
     # au, Assembly-Unit
     # uc, UCSC-style-name
 
+    # converter(p_assemblyreport, \
+    #           id_from='rs', \
+    #           id_to='uc', \
+    #           p_gff3=p_gff3, \
+    #           p_output=p_output)
+    #
+    # guessing mode
     converter(p_assemblyreport, \
-              id_from='rs', \
+              id_from=None, \
               id_to='uc', \
               p_gff3=p_gff3, \
               p_output=p_output)
+
 
 
 
