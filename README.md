@@ -19,3 +19,4 @@ seqconv contact | Feature requests, begs, mailing lists
 ```
 some lines of code go here and then something happens
 ```
+![SeqIDMapper Workflow:](https://github.com/NCBI-Hackathons/Master_gff3_parser/blob/master/seqidmapper.png?raw=true)
