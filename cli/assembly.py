@@ -2,7 +2,8 @@ import re
 import os
 import sys
 import optparse
-#import urllib.request
+
+
 
 # Managing python version
 if sys.version_info >= (3,0):
@@ -97,7 +98,7 @@ def get_mapper(p_assemblyreport, id_from=None, id_to='sn'):
             if line.startswith('#'):
                 continue
 
-            sp = line.split('\t')
+            sp = line.strip().split('\t')
 
 
             try:
@@ -157,17 +158,16 @@ def convert(f_input, d_mapper, pos_col, p_output, guess=None):
                 str_gff = line
 
             # ##sequence-region line
+            # TODO scan only if gff3?
             elif line.startswith('##sequence-region'):
-                sp = line.split()
+                sp = line.strip().split()
                 idtoconvert = sp[1]
 
                 # if can't mapp we skip the line
                 try:
                     idconverted, id_format = d_mapper[idtoconvert]
                 except:
-                    print ('Cannot find idtoconvert in the mapper', idtoconvert)
-
-                    # TODO write a log file
+                    sys.stderr.write('Cannot find idtoconvert in the mapper {0}\n'.format(idtoconvert), file=sys.stderr)
                     continue
 
                 current_idfrom = idtoconvert
@@ -175,10 +175,10 @@ def convert(f_input, d_mapper, pos_col, p_output, guess=None):
                 length_idfrom = len(current_idfrom)
                 current_format = id_format
 
+
                 # if mapp to an NA we skip the line
-                if idconverted == 'NA':
-                    print ('No corresponding to {0} in {1}'.format(current_idfrom, current_format))
-                    # TODO write a log file
+                if idconverted.lower() == 'na':
+                    sys.stderr.write('No corresponding to {0} in {1}\n'.format(current_idfrom, current_format))
                     continue
 
                 # output format
@@ -189,34 +189,34 @@ def convert(f_input, d_mapper, pos_col, p_output, guess=None):
 
             # coord lines ==> convertion
             else:
+                sp = line.strip().split('\t')
                 # check if previous line has the same accession to avoid another dictionary search
                 if current_idfrom == line[:length_idfrom]:
                     idconverted = current_idto
                 else:
-                    sp = line.split('\t')
                     idtoconvert = sp[pos_col] # pos_col is 0 based
 
                     try:
                         idconverted, id_format = d_mapper[idtoconvert]
                     except:
-                        # TODO write a log file
-                        print ('Cannot find idtoconvert in the mapper', idtoconvert)
-
+                        sys.stderr.write('Cannot find idtoconvert in the mapper {0}\n'.format(idtoconvert))
                         continue
 
                     current_idfrom = idtoconvert
                     current_idto = idconverted
                     length_idfrom = len(idtoconvert)
 
-                if idconverted == 'NA':
-                    # TODO write a log file
-                    print ('No corresponding to {} in {}'.format(idtoconvert, id_format))
+                if idconverted.lower() == 'na':
+                    sys.stderr.write('No corresponding to {0} in {1}\n'.format(idtoconvert, id_format))
                     continue
 
 
 
                 # output format
-                str_gff ='{seqid}\t{eol}'.format(seqid=idconverted, eol=line[length_idfrom:])
+                sp[pos_col] = idconverted
+                str_gff = '\t'.join(sp)+'\n'
+
+                #str_gff ='{seqid}\t{eol}'.format(seqid=idconverted, eol=line[length_idfrom:])
 
             # final output writing
             fout.write (str_gff)
@@ -271,13 +271,13 @@ if __name__== '__main__':
     #
 
     # USER PROVIDE ASSEMBLY NAME
-    assembly_name = 'GRCh38'
+    assembly_name = 'GRCh38.p10'
 
     # ID FROM CAN BE GUESSED IS None
     id_from = None
 
     # ID TO IS THE FORMAT CONVERTION DESIRED
-    id_to = 'sn'
+    id_to = 'uc'
 
     # GFF3 FILE INPUT
     p_gff3 = 'GCF_000001405.36_GRCh38.p10_genomic.gff'
@@ -296,8 +296,7 @@ if __name__== '__main__':
     # GET ASSEMBLY REPORT
     p_assembly_report = fetch_assembly_report(assembly_name)
 
-    # TODO downloading assembly_report
-
+    #p_assembly_report='GCF_000001405.36_GRCh38.p10_assembly_report.txt'
     converter(p_assemblyreport=p_assembly_report,\
               f_input=f_gff3,\
               pos_col=pos_col,\
