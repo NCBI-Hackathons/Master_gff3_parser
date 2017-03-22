@@ -96,8 +96,8 @@ def get_mapper(p_assemblyreport, id_from=None, id_to='sn'):
     # Fetch assembly_report to NCBI
     f = urlopen(p_assemblyreport)
     # with statement does not work with python2
-    #with urlopen(p_assemblyreport) as f:
-    #with open(p_assemblyreport)as f:
+    # with urlopen(p_assemblyreport) as f:
+    # with open(p_assemblyreport)as f:
 
     if True:
         for line in f:

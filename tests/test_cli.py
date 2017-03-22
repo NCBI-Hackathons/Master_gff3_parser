@@ -1,6 +1,6 @@
 from cli import command
 from tests.test_utilities import Capturing
-from cli.assembly import fetch_assembly_report
+from cli.assembly import fetch_assembly_report, get_mapper
 
 
 def test_fetch_GRCh38():
@@ -10,7 +10,9 @@ def test_fetch_GRCh38():
     assert url == "http://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.26_GRCh38/GCF_000001405.26_GRCh38_assembly_report.txt"
 	
 
-
+def test_get_mapper():
+    assert get_mapper("http://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.26_GRCh38/GCF_000001405.26_GRCh38_assembly_report.txt")
+  
 """
 def test_vars():
     with Capturing() as out:
