@@ -3,20 +3,25 @@ import os
 import sys
 import optparse
 
+id2col = {'sn':0,
+          'gb':5,
+          'rs':6,
+          'au':7,
+          'uc':9,
+          'sequence-name':0,
+          'assembly-unit':7,
+          'genbank':5,
+          'refseq':6,
+          'ucsc':9}
 
 # TODO debug python2x
 # TODO full name of id format
-
 
 # Managing python version
 if sys.version_info >= (3,0):
     from urllib.request import urlopen # Python3
 else:
     from urllib2 import urlopen # Python 2
-
-
-
-
 
 ##### FUNCTIONS
 def fetch_assembly_report(assembly):
@@ -77,11 +82,6 @@ def get_mapper(p_assemblyreport, id_from=None, id_to='sn'):
 
     sys.stderr.write('from {} to {}'.format(id_from,id_to))
     # find correct colum for convertion
-    id2col = {'sn':0,
-                 'gb':5,
-                 'rs':6,
-                 'au':7,
-                 'uc':9}
     to_col = id2col[id_to]
 
     # format specified by user
@@ -91,10 +91,7 @@ def get_mapper(p_assemblyreport, id_from=None, id_to='sn'):
     else:
         l_id_from = [id for id in id2col if id!= id_from]
 
-
-
     d_from2to = {}
-
 
     # Fetch assembly_report to NCBI
     f = urlopen(p_assemblyreport)

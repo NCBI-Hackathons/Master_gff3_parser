@@ -5,7 +5,6 @@ from . import _program
 from cli.assembly import *
 from cli.filetype import file_from_stream, file_from_name
 
-
 class bcolors:
     BLUE = '\033[94m'
     GREEN = '\033[92m'
@@ -18,25 +17,33 @@ usage_str = '''seqconv <command> [<args>]
 
 Commands
    convert     Convert sequence identifiers
-   resolve     Attempt to identify the reference genome.
+
 '''
+
+id_types = '''
+in/out id types:
+  * refseq (rs)
+  * genbank (gb)
+  * ucsc (uc)
+  * sequence-name (sn)
+  * assembly-unit (au)
+
+'''
+
+id_types_indent = '\n'.join(["\t" + x for x in id_types.split("\n")]) + "\n"
 
 conv_str = '''seqconv convert [--ref <reference> --in <input-id>] --out <output-id> <file>
 
-Commands
-   convert     Convert sequence identifiers
+Usage
+   --ref     reference genome
+   --in      input id type (optional)
+   --out     output id type
+   <file>    file or stream
+''' + id_types
 
-'''
-
-resolve_str = '''seqconv resolve <file>
-
-Attempt to identify the reference genome given a GFF, BED, or SAM/BAM.
-
-'''
 
 def read_file(input):
     return input
-
 
 class comm(object):
 
@@ -56,22 +63,29 @@ class comm(object):
         parser = argparse.ArgumentParser(
             description='Record changes to the repository',
             usage=conv_str)
-        # prefixing the argument with -- means it's optional
         parser.add_argument('--ref', type=str, default=None)
-        parser.add_argument('--id_from', type=str, default=None)
-        parser.add_argument('--id_to', type=str)
+        parser.add_argument('--in', type=str, default=None)
+        parser.add_argument('--out', type=str)
         parser.add_argument('<file>', type=read_file)          
-
-        sys.stderr.write(bcolors.BLUE + "\nConverting IDs\n" + bcolors.ENDC)
             
         args = parser.parse_args(sys.argv[2:])
-        if not args.ref:
-            # Resolve reference code goes here.
-            pass
-
-        # Code for checking input/output formats goes here!
-
+        in_id = getattr(args,'in')
         fname = getattr(args, "<file>")
+
+        # Check if in and out specified correctly
+        if in_id != None and in_id not in id2col.keys():
+            sys.stderr.write(bcolors.FAIL + "\n\tInvalid input ID specified\n\n" + id_types_indent + bcolors.ENDC)           
+            exit(1)    
+
+        if args.out not in id2col.keys():
+            sys.stderr.write(bcolors.FAIL + "\n\tInvalid output ID specified\n\n" + id_types_indent + bcolors.ENDC)           
+            exit(1)            
+
+        # Check if file or stream exists
+        if not os.path.isfile(fname) and fname != "-":
+            sys.stderr.write(bcolors.FAIL + "\n\t'%s' not found\n\n" % fname + bcolors.ENDC)           
+            exit(1)
+
         if fname == "-":
             fout = file_from_stream(sys.stdin)
             col_number = fout.id_column
@@ -80,30 +94,12 @@ class comm(object):
                 pass
             fout, col_number = file_from_name(fname)
         
-        p_assembly_report = fetch_assembly_report(args.ref)
-
-        #p_assembly_report='GCF_000001405.36_GRCh38.p10_assembly_report.txt'
-        converter(p_assemblyreport=p_assembly_report,
+        assembly_report = fetch_assembly_report(args.ref)
+        converter(p_assemblyreport=assembly_report,
                   f_input=fout,
                   pos_col=col_number,
-                  id_from=args.id_from,
-                  id_to=args.id_to)
-
-
-
-
-        # Code for transforming goes here!
-    def resolve(self):
-        parser = argparse.ArgumentParser(
-            description='Download objects and refs from another repository',
-            usage=resolve_str)
-        parser.add_argument('<file>', type=read_file)
-        sys.stderr.write(bcolors.BLUE + "\n\tAttempting to identify reference genome\n" + bcolors.ENDC)
-        args = parser.parse_args(sys.argv[2:])
-
-        # Code for identifying reference goes here!
-
-
+                  id_from=in_id,
+                  id_to=args.out)
 
 
 def main(args = sys.argv[1:]):
