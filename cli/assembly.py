@@ -197,13 +197,14 @@ def get_mapper(p_assemblyreport, id_from=None, id_to='sn'):
     return d_from2to
 
 
-def convert(f_input, d_mapper, pos_col, guess=None):
+def convert(f_input, d_mapper, pos_col, guess=None, na=False):
     """
 
     :param p_gff3: path to input gff3 file
     :param d_mapper: [idtoconvert] -> idconverted
     :param na: manage the way to output the line if id_to point to NA
     :param pos_col is the column position we need to convert, 0 based!
+    :param na True screeh the non converted line is NA convertion is faced, False na is indicated in stderr
     :return: None
 
     """
@@ -251,6 +252,9 @@ def convert(f_input, d_mapper, pos_col, guess=None):
                 if last_error != new_error:
                     sys.stderr.write(new_error)
                     last_error = new_error
+
+                if na:
+                    sys.stdout.write(line)
                 continue
 
             # output format
@@ -275,6 +279,8 @@ def convert(f_input, d_mapper, pos_col, guess=None):
                     if last_error != new_error:
                         sys.stderr.write(new_error)
                         last_error = new_error
+                    if na:
+                        sys.stdout.write(line)
                     continue
 
                 current_idfrom = idtoconvert
@@ -287,6 +293,8 @@ def convert(f_input, d_mapper, pos_col, guess=None):
                 if last_error != new_error:
                     sys.stderr.write(new_error)
                     last_error = new_error
+                if na:
+                    sys.stdout.write(line)
                 continue
 
             # output format
@@ -306,7 +314,8 @@ def converter(p_assemblyreport=None,\
               f_input=None,\
               pos_col=None,
               id_from=None,
-              id_to=None):
+              id_to=None,
+              na=False):
     """
 
     :param p_assemblyreport: p_assembly_report path to the input assembly report file
@@ -314,6 +323,7 @@ def converter(p_assemblyreport=None,\
     :param pos_col: is the column number to convert in the f_input object file
     :param id_from: institution id use sn, gb, rs, au, uc
     :param id_to: instituion id use sn, gb, rs, au, uc
+    :param na True when no convertion possible, non converted line is given, False only stderr message
     :return:
     """
 
@@ -332,12 +342,12 @@ def converter(p_assemblyreport=None,\
             convert(f_input=f_input,
                     pos_col=pos_col,
                     d_mapper=d_mapper,
-                    guess=True)
+                    guess=True, na=False)
         else:
                     convert(f_input=f_input,
                     pos_col=pos_col,
                     d_mapper=d_mapper,
-                    guess=False)
+                    guess=False, na=False)
     except (KeyboardInterrupt, SystemExit, BrokenPipeError):
         pass
 
