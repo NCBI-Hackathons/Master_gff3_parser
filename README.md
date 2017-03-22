@@ -27,13 +27,13 @@ Links to file format descriptions:
 Linux:
 
 ```
-some lines of code go here and then something happens
+python setup.py install
 ```
 
 OSX:
 
 ```
-some lines of code go here and then something happens
+python setup.py install
 ```
 
 ![SeqIDMapper Workflow:](https://github.com/NCBI-Hackathons/Master_gff3_parser/blob/master/seqidmapper.png?raw=true)
