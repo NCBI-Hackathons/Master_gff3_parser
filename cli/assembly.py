@@ -60,6 +60,7 @@ def fetch_assembly_report(assembly):
     re.findall("<FtpPath_Assembly_rpt>(.*)</FtpPath_Assembly_rpt>", r , re.I|re.M)
 
     GCF_assembly_report_url = re.findall("<FtpPath_Assembly_rpt>(.*)</FtpPath_Assembly_rpt>", r)[0]
+    print(GCF_assembly_report_url)
     return GCF_assembly_report_url.replace("ftp://", "http://")
 
 
@@ -197,8 +198,8 @@ def convert(f_input, d_mapper, pos_col, guess=None):
             length_idfrom = len(current_idfrom)
             current_format = id_format
 
-            # if mapp to an NA we skip the line
-            if idconverted.lower() == 'na':
+            # if map to an NA we skip the line
+            if idconverted.lower() in ['na', '<>']:
                 new_error = 'No corresponding id for {0} from {1}\n'.format(current_idfrom, current_format)
                 if last_error != new_error:
                     sys.stderr.write(new_error)
@@ -234,7 +235,7 @@ def convert(f_input, d_mapper, pos_col, guess=None):
                 length_idfrom = len(idtoconvert)
 
             # if mapp to an NA we skip the line
-            if idconverted.lower() == 'na':
+            if idconverted.lower() in ['na', '<>']:
                 new_error = 'No corresponding id for {0} from {1}\n'.format(current_idfrom, current_format)
                 if last_error != new_error:
                     sys.stderr.write(new_error)
