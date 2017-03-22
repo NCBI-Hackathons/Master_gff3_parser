@@ -164,7 +164,7 @@ def convert(f_input, d_mapper, pos_col, guess=None):
 
         # comment lines => no convertion
         # sharp for gff and arobase for sam
-        if line.startswith('# ') or line.startswith('@'):
+        if line.startswith('#') or line.startswith('@'):
             str_gff = line
 
         # ##sequence-region line
