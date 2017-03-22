@@ -217,7 +217,7 @@ def convert(f_input, d_mapper, pos_col, guess=None, na=False):
     current_format = None
     id_format = None
     last_error = None
-    print(d_mapper)
+    #print(d_mapper)
     for line in f_input:
         line = line#.decode("utf-8")
         # comment lines => no convertion
