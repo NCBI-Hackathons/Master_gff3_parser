@@ -41,7 +41,7 @@ def fetch_assembly_report(assembly):
     # with urlopen(fetch_url.format(id=id_set[0])) as response:
     #         r = str(response.read())
 
-    re.findall("<FtpPath_Assembly_rpt>(.*)</FtpPath_Assembly_rpt>", r)
+    re.findall("<FtpPath_Assembly_rpt>(.*)</FtpPath_Assembly_rpt>", r , re.I|re.M)
 
     GCF_assembly_report_url = re.findall("<FtpPath_Assembly_rpt>(.*)</FtpPath_Assembly_rpt>", r)[0]
     return GCF_assembly_report_url.replace("ftp://", "http://")
