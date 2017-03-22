@@ -2,7 +2,7 @@ import re
 import os
 import sys
 import optparse
-from . import bcolors
+#from . import bcolors
 from signal import signal, SIGPIPE, SIG_DFL
 signal(SIGPIPE, SIG_DFL)
 
@@ -46,11 +46,11 @@ def fetch_assembly_report(assembly):
         r = str(response.read())
         id_set = list(map(int, re.findall("<Id>([0-9]+)</Id>", r))) # cast as list python 3.5
         if len(id_set) > 1:
-            sys.stderr.write(bcolors.FAIL + ("\n\tAmbiguous reference name\n\n" % assembly) + bcolors.ENDC)                   
+            #sys.stderr.write(bcolors.FAIL + ("\n\tAmbiguous reference name\n\n" % assembly) + bcolors.ENDC)
             exit(1)           
 
     if not id_set:
-        sys.stderr.write(bcolors.FAIL + ("\n\tReference '%s' not found\n\n" % assembly) + bcolors.ENDC)                   
+        #sys.stderr.write(bcolors.FAIL + ("\n\tReference '%s' not found\n\n" % assembly) + bcolors.ENDC)
         exit(1)
     fetch_url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=assembly&id={id}"
 
@@ -93,15 +93,8 @@ def get_mapper(p_assemblyreport, id_from=None, id_to='sn'):
     """
 
     sys.stderr.write('Converting from {} to {}'.format(id_from,id_to))
-    # find correct colum for convertion
-    to_col = id2col[id_to]
 
-    # format specified by user
-    if id_from:
-        from_col = id2col[id_from]
-    # guess format
-    else:
-        l_id_from = [id for id in id2col if id!= id_from]
+
 
     d_from2to = {}
 
@@ -111,13 +104,66 @@ def get_mapper(p_assemblyreport, id_from=None, id_to='sn'):
     # with urlopen(p_assemblyreport) as f:
     # with open(p_assemblyreport)as f:
 
+
+    # Assembly report idformat order storage
+    d_order = {'GenBank-Accn':None,
+            'Sequence-Name':None,
+           'RefSeq-Accn':None,
+           'Assembly-Unit':None,
+           'UCSC-style-name':None}
+
+
+    d_cor = {'GenBank-Accn':['gb', 'genbank'],
+            'Sequence-Name':['sn','sequence-name'],
+           'RefSeq-Accn':['rs','refseq'],
+           'Assembly-Unit':['au','ssembly-unit'],
+           'UCSC-style-name':['us','ucsc']}
+
+    # This dictionary is fully updated LATER from assembly report
+    id2col = {'sn':0,
+          'gb':5,
+          'rs':6,
+          'au':7,
+          'uc':9,
+          'sequence-name':0,
+          'assembly-unit':7,
+          'genbank':5,
+          'refseq':6,
+          'ucsc':9}
+
     if True:
         for line in f:
             line = line.decode("utf-8")
 
-
             if line.startswith('#'):
+
+                # find order of the id format in the assembly report file
+                if 'Sequence-Name' in line:
+
+                    # UPDATE OF THE DICTIONARY TO GET THE CORRECT ORDER
+                    # Load the order from assembly report header
+                    for colpos, idformat in enumerate(line[1:].strip().split('\t')):
+
+                        if idformat in d_order:
+                            single_letter_id, fullname_id = d_cor[idformat]
+                            id2col[single_letter_id] = colpos
+                            id2col[fullname_id] = colpos
+
+
+
+                    # find correct colum for convertion
+                    to_col = id2col[id_to]
+
+                    # format specified by user
+                    if id_from:
+                        from_col = id2col[id_from]
+                    # guess format
+                    else:
+                        l_id_from = [id for id in id2col if id!= id_from]
+
                 continue
+
+
 
             sp = line.strip().split('\t')
 
@@ -171,7 +217,7 @@ def convert(f_input, d_mapper, pos_col, guess=None):
     last_error = None
 
     for line in f_input:
-        line = line.decode("utf-8")
+        line = line#.decode("utf-8")
         # comment lines => no convertion
         # sharp for gff and arobase for sam
         if line.startswith('#') or line.startswith('@'):
