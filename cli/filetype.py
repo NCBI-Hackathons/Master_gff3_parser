@@ -2,6 +2,7 @@ import os
 import sys
 from itertools import islice
 import gzip
+from . import bcolors
 
 class f_stream:
     """
@@ -15,11 +16,14 @@ class f_stream:
         self.out_line_set = []
         lc = 0
         while lc <= 2:
-            lc += 1
             line = self.stdin.readline()
+            if lc == 0 and not line:
+                sys.stderr.write(bcolors.FAIL + "\n\tNo Input detected\n\n" + bcolors.ENDC)           
+                exit(1)
             if not line:
                 break
             self.out_line_set.append(line)
+            lc += 1
 
         if self.out_line_set[0].startswith("@"):
             self.id_column = 2

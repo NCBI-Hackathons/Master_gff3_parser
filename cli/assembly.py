@@ -2,6 +2,7 @@ import re
 import os
 import sys
 import optparse
+from . import bcolors
 
 id2col = {'sn':0,
           'gb':5,
@@ -38,6 +39,9 @@ def fetch_assembly_report(assembly):
     #         r = str(response.read())
 
     id_set = list(map(int, re.findall("<Id>(.*)</Id>", r))) # cast as list python 3.5
+    if not id_set:
+        sys.stderr.write(bcolors.FAIL + ("\n\tReference '%s' not found\n\n" % assembly) + bcolors.ENDC)                   
+        exit(1)
     fetch_url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=assembly&id={id}"
     #r = requests.get(fetch_url.format(id = id_set[0])).text
 
