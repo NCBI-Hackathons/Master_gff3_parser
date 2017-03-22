@@ -15,7 +15,7 @@ seqconv help | Print help menu
 seqconv version | What version of SeqIDMapper
 seqconv contact | Feature requests, bugs, mailing lists
 
-Links to format descriptions:
+Links to file format descriptions:
 [GFF3,](https://www.google.com/url?q=https://github.com/The-Sequence-Ontology/Specifications/blob/master/gff3.md&sa=D&ust=1490199000838000&usg=AFQjCNGJrt_qqhwtBufCdrc0sT28hntlVg)
 [SAM,](https://samtools.github.io/hts-specs/SAMv1.pdf)
 [BED,](http://useast.ensembl.org/info/website/upload/bed.html)
