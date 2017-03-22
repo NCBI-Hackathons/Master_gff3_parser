@@ -2,7 +2,7 @@ import re
 import os
 import sys
 import optparse
-#from . import bcolors
+from cli import bcolors
 from signal import signal, SIGPIPE, SIG_DFL
 signal(SIGPIPE, SIG_DFL)
 
@@ -46,11 +46,11 @@ def fetch_assembly_report(assembly):
         r = str(response.read())
         id_set = list(map(int, re.findall("<Id>([0-9]+)</Id>", r))) # cast as list python 3.5
         if len(id_set) > 1:
-            #sys.stderr.write(bcolors.FAIL + ("\n\tAmbiguous reference name\n\n" % assembly) + bcolors.ENDC)
+            sys.stderr.write(bcolors.FAIL + ("\n\tAmbiguous reference name\n\n" % assembly) + bcolors.ENDC)
             exit(1)           
 
     if not id_set:
-        #sys.stderr.write(bcolors.FAIL + ("\n\tReference '%s' not found\n\n" % assembly) + bcolors.ENDC)
+        sys.stderr.write(bcolors.FAIL + ("\n\tReference '%s' not found\n\n" % assembly) + bcolors.ENDC)
         exit(1)
     fetch_url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=assembly&id={id}"
 
@@ -116,7 +116,7 @@ def get_mapper(p_assemblyreport, id_from=None, id_to='sn'):
     d_cor = {'GenBank-Accn':['gb', 'genbank'],
             'Sequence-Name':['sn','sequence-name'],
            'RefSeq-Accn':['rs','refseq'],
-           'Assembly-Unit':['au','ssembly-unit'],
+           'Assembly-Unit':['au','assembly-unit'],
            'UCSC-style-name':['us','ucsc']}
 
     # This dictionary is fully updated LATER from assembly report
@@ -214,8 +214,9 @@ def convert(f_input, d_mapper, pos_col, guess=None):
     current_idto = None
     length_idfrom = None
     current_format = None
+    id_format = None
     last_error = None
-
+    print(d_mapper)
     for line in f_input:
         line = line#.decode("utf-8")
         # comment lines => no convertion
@@ -341,43 +342,4 @@ def converter(p_assemblyreport=None,\
         pass
 
     return None
-
-if __name__== '__main__':
-
-    ### TESTING AREA
-    #
-
-    # USER PROVIDE ASSEMBLY NAME
-    assembly_name = 'GRCh38.p10'
-
-    # ID FROM CAN BE GUESSED IS None
-    id_from = None
-
-    # ID TO IS THE FORMAT CONVERTION DESIRED
-    id_to = 'uc'
-
-    # GFF3 FILE INPUT
-    p_gff3 = 'GCF_000001405.36_GRCh38.p10_genomic.gff'
-    # new format => this is a file object
-    f_gff3 = open(p_gff3)
-
-    # Column number
-    pos_col = 0
-
-    # OUTPUT FILE
-    p_output = 'converted.gff3'
-
-
-    #### CORE
-    # GET ASSEMBLY REPORT
-    p_assembly_report = fetch_assembly_report(assembly_name)
-
-    #p_assembly_report='GCF_000001405.36_GRCh38.p10_assembly_report.txt'
-    converter(p_assemblyreport=p_assembly_report,\
-              f_input=f_gff3,\
-              pos_col=pos_col,\
-              id_from=id_from,\
-              id_to=id_to)
-
-
 
