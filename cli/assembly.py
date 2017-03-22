@@ -3,6 +3,8 @@ import os
 import sys
 import optparse
 from . import bcolors
+from signal import signal, SIGPIPE, SIG_DFL
+signal(SIGPIPE, SIG_DFL)
 
 id2col = {'sn':0,
           'gb':5,
@@ -29,26 +31,31 @@ def fetch_assembly_report(assembly):
     """
         Fetch an assembly report from an assembly name
     """
-
-    search_url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=assembly&term={assembly}[Assembly%20Name]"
+    q_type = "Assembly%20Name"
+    if assembly.startswith("GCF_") or assembly.startswith("GCA_"):
+        q_type = "Assembly%20Accession"
+    search_url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=assembly&term={assembly}[{q_type}]"
 
     # with does not work with python2 ==> remooving all with
-    response = urlopen(search_url.format(assembly=assembly))
+    response = urlopen(search_url.format(assembly=assembly, q_type=q_type))
     r = str(response.read())
-    # with urlopen(search_url.format(assembly=assembly)) as response:
-    #         r = str(response.read())
-
     id_set = list(map(int, re.findall("<Id>(.*)</Id>", r))) # cast as list python 3.5
+    if not id_set:
+        search_url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=assembly&term={assembly}[All%20Names]"
+        response = urlopen(search_url.format(assembly=assembly, q_type=q_type))
+        r = str(response.read())
+        id_set = list(map(int, re.findall("<Id>(.*)</Id>", r))) # cast as list python 3.5
+        if len(id_set) > 1:
+            sys.stderr.write(bcolors.FAIL + ("\n\tAmbiguous reference name\n\n" % assembly) + bcolors.ENDC)                   
+            exit(1)           
+
     if not id_set:
         sys.stderr.write(bcolors.FAIL + ("\n\tReference '%s' not found\n\n" % assembly) + bcolors.ENDC)                   
         exit(1)
     fetch_url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=assembly&id={id}"
-    #r = requests.get(fetch_url.format(id = id_set[0])).text
 
     response = urlopen(fetch_url.format(id=id_set[0]))
     r = str(response.read())
-    # with urlopen(fetch_url.format(id=id_set[0])) as response:
-    #         r = str(response.read())
 
     re.findall("<FtpPath_Assembly_rpt>(.*)</FtpPath_Assembly_rpt>", r , re.I|re.M)
 
@@ -84,7 +91,7 @@ def get_mapper(p_assemblyreport, id_from=None, id_to='sn'):
     :return: d_from2to [id from] -> id to
     """
 
-    sys.stderr.write('from {} to {}'.format(id_from,id_to))
+    sys.stderr.write('Converting from {} to {}'.format(id_from,id_to))
     # find correct colum for convertion
     to_col = id2col[id_to]
 
@@ -154,18 +161,16 @@ def convert(f_input, d_mapper, pos_col, guess=None):
 
     """
 
-    sys.stderr.write('STARTING CONVERTION\n')
-
-
-
+    sys.stderr.write('Starting Conversion\n')
     # recall key to reduce time
     current_idfrom = None
     current_idto = None
     length_idfrom = None
     current_format = None
+    last_error = None
 
     for line in f_input:
-
+        line = line.decode("utf-8")
         # comment lines => no convertion
         # sharp for gff and arobase for sam
         if line.startswith('#') or line.startswith('@'):
@@ -181,7 +186,10 @@ def convert(f_input, d_mapper, pos_col, guess=None):
             try:
                 idconverted, id_format = d_mapper[idtoconvert]
             except:
-                sys.stderr.write('Cannot find idtoconvert in the mapper {0}\n'.format(idtoconvert))
+                new_error = 'Cannot convert id: {0}\n'.format(idtoconvert)
+                if last_error != new_error:
+                    sys.stderr.write(new_error)
+                    last_error = new_error
                 continue
 
             current_idfrom = idtoconvert
@@ -213,7 +221,10 @@ def convert(f_input, d_mapper, pos_col, guess=None):
                 try:
                     idconverted, id_format = d_mapper[idtoconvert]
                 except:
-                    sys.stderr.write('Cannot find idtoconvert in the mapper {0}\n'.format(idtoconvert))
+                    new_error = 'Cannot convert id: {0}\n'.format(idtoconvert)
+                    if last_error != new_error:
+                        sys.stderr.write(new_error)
+                        last_error = new_error
                     continue
 
                 current_idfrom = idtoconvert
@@ -264,16 +275,19 @@ def converter(p_assemblyreport=None,\
     d_mapper = get_mapper(p_assemblyreport, id_from, id_to)
 
     # apply the mapp to convert the gff3
-    if not id_from:
-        convert(f_input=f_input,
-                pos_col=pos_col,
-                d_mapper=d_mapper,
-                guess=True)
-    else:
-                convert(f_input=f_input,
-                pos_col=pos_col,
-                d_mapper=d_mapper,
-                guess=False)
+    try:
+        if not id_from:
+            convert(f_input=f_input,
+                    pos_col=pos_col,
+                    d_mapper=d_mapper,
+                    guess=True)
+        else:
+                    convert(f_input=f_input,
+                    pos_col=pos_col,
+                    d_mapper=d_mapper,
+                    guess=False)
+    except (KeyboardInterrupt, SystemExit, BrokenPipeError):
+        pass
 
     return None
 
@@ -304,7 +318,6 @@ if __name__== '__main__':
 
 
     #### CORE
-
     # GET ASSEMBLY REPORT
     p_assembly_report = fetch_assembly_report(assembly_name)
 

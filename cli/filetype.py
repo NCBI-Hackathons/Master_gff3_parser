@@ -15,7 +15,7 @@ class f_stream:
         self.stdin = stdin
         self.out_line_set = []
         lc = 0
-        while lc <= 2:
+        while lc <= 10:
             line = self.stdin.readline()
             if lc == 0 and not line:
                 sys.stderr.write(bcolors.FAIL + "\n\tNo Input detected\n\n" + bcolors.ENDC)           
