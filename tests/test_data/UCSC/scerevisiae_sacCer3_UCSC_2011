@@ -1,0 +1,17 @@
+chrI	sacCer3_gold	exon	1	230218	0.000000	+	.	gene_id "BK006935.2"; transcript_id "BK006935.2"; 
+chrM	sacCer3_gold	exon	1	85779	0.000000	+	.	gene_id "NC_001224"; transcript_id "NC_001224"; 
+chrV	sacCer3_gold	exon	1	576874	0.000000	+	.	gene_id "BK006939.2"; transcript_id "BK006939.2"; 
+chrX	sacCer3_gold	exon	1	745751	0.000000	+	.	gene_id "BK006943.2"; transcript_id "BK006943.2"; 
+chrII	sacCer3_gold	exon	1	813184	0.000000	+	.	gene_id "BK006936.2"; transcript_id "BK006936.2"; 
+chrIV	sacCer3_gold	exon	1	1531933	0.000000	+	.	gene_id "BK006938.2"; transcript_id "BK006938.2"; 
+chrIX	sacCer3_gold	exon	1	439888	0.000000	+	.	gene_id "BK006942.2"; transcript_id "BK006942.2"; 
+chrVI	sacCer3_gold	exon	1	270161	0.000000	+	.	gene_id "BK006940.2"; transcript_id "BK006940.2"; 
+chrXI	sacCer3_gold	exon	1	666816	0.000000	+	.	gene_id "BK006944.2"; transcript_id "BK006944.2"; 
+chrXV	sacCer3_gold	exon	1	1091291	0.000000	+	.	gene_id "BK006948.2"; transcript_id "BK006948.2"; 
+chrIII	sacCer3_gold	exon	1	316620	0.000000	+	.	gene_id "BK006937.2"; transcript_id "BK006937.2"; 
+chrVII	sacCer3_gold	exon	1	1090940	0.000000	+	.	gene_id "BK006941.2"; transcript_id "BK006941.2"; 
+chrXII	sacCer3_gold	exon	1	1078177	0.000000	+	.	gene_id "BK006945.2"; transcript_id "BK006945.2"; 
+chrXIV	sacCer3_gold	exon	1	784333	0.000000	+	.	gene_id "BK006947.3"; transcript_id "BK006947.3"; 
+chrXVI	sacCer3_gold	exon	1	948066	0.000000	+	.	gene_id "BK006949.2"; transcript_id "BK006949.2"; 
+chrVIII	sacCer3_gold	exon	1	562643	0.000000	+	.	gene_id "BK006934.2"; transcript_id "BK006934.2"; 
+chrXIII	sacCer3_gold	exon	1	924431	0.000000	+	.	gene_id "BK006946.2"; transcript_id "BK006946.2"; 
