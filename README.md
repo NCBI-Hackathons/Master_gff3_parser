@@ -5,15 +5,15 @@ Generic Feature Format version 3 (GFF3) is a file type that is commonly used in 
 
 SeqIDMapper was built in Python and runs from the command line. Users provide the input file, the specific reference genome, and the desired name of the output file.
 
-A summary of the commands is provided below.
+A summary of the **seqconv** commands is provided below.
 
 Command | Description
 ------------ | -------------
-seqconv guess | Infers file type
-seqconv convert | Converts sequence IDs
-seqconv help | Print help menu
-seqconv version | What version of SeqIDMapper
-seqconv contact | Feature requests, bugs, mailing lists
+guess | Infers file type
+convert | Converts sequence IDs
+help | Print help menu
+version | What version of SeqIDMapper
+contact | Feature requests, bugs, mailing lists
 
 Links to file format descriptions:
 [GFF3,](https://www.google.com/url?q=https://github.com/The-Sequence-Ontology/Specifications/blob/master/gff3.md&sa=D&ust=1490199000838000&usg=AFQjCNGJrt_qqhwtBufCdrc0sT28hntlVg)
@@ -27,13 +27,13 @@ Links to file format descriptions:
 Linux:
 
 ```
-some lines of code go here and then something happens
+python setup.py install
 ```
 
 OSX:
 
 ```
-some lines of code go here and then something happens
+python setup.py install
 ```
 
 ![SeqIDMapper Workflow:](https://github.com/NCBI-Hackathons/Master_gff3_parser/blob/master/seqidmapper.png?raw=true)
