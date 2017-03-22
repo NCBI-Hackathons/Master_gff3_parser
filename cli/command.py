@@ -5,7 +5,6 @@ from . import _program, bcolors
 from cli.assembly import *
 from cli.filetype import file_from_stream, file_from_name
 
-
 usage_str = '''seqconv <command> [<args>]
 
 Commands
