@@ -39,12 +39,12 @@ def fetch_assembly_report(assembly):
     # with does not work with python2 ==> remooving all with
     response = urlopen(search_url.format(assembly=assembly, q_type=q_type))
     r = str(response.read())
-    id_set = list(map(int, re.findall("<Id>(.*)</Id>", r))) # cast as list python 3.5
+    id_set = list(map(int, re.findall("<Id>([0-9]+)</Id>", r))) # cast as list python 3.5
     if not id_set:
         search_url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=assembly&term={assembly}[All%20Names]"
         response = urlopen(search_url.format(assembly=assembly, q_type=q_type))
         r = str(response.read())
-        id_set = list(map(int, re.findall("<Id>(.*)</Id>", r))) # cast as list python 3.5
+        id_set = list(map(int, re.findall("<Id>([0-9]+)</Id>", r))) # cast as list python 3.5
         if len(id_set) > 1:
             sys.stderr.write(bcolors.FAIL + ("\n\tAmbiguous reference name\n\n" % assembly) + bcolors.ENDC)                   
             exit(1)           
@@ -197,10 +197,12 @@ def convert(f_input, d_mapper, pos_col, guess=None):
             length_idfrom = len(current_idfrom)
             current_format = id_format
 
-
             # if mapp to an NA we skip the line
             if idconverted.lower() == 'na':
-                sys.stderr.write('No corresponding to {0} in {1}\n'.format(current_idfrom, current_format))
+                new_error = 'No corresponding id for {0} from {1}\n'.format(current_idfrom, current_format)
+                if last_error != new_error:
+                    sys.stderr.write(new_error)
+                    last_error = new_error
                 continue
 
             # output format
@@ -231,11 +233,13 @@ def convert(f_input, d_mapper, pos_col, guess=None):
                 current_idto = idconverted
                 length_idfrom = len(idtoconvert)
 
+            # if mapp to an NA we skip the line
             if idconverted.lower() == 'na':
-                sys.stderr.write('No corresponding to {0} in {1}\n'.format(idtoconvert, id_format))
+                new_error = 'No corresponding id for {0} from {1}\n'.format(current_idfrom, current_format)
+                if last_error != new_error:
+                    sys.stderr.write(new_error)
+                    last_error = new_error
                 continue
-
-
 
             # output format
             sp[pos_col] = idconverted
