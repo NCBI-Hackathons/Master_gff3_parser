@@ -359,7 +359,7 @@ if __name__== '__main__':
     #
 
     # USER PROVIDE ASSEMBLY NAME
-    assembly_name = 'GCF_000003055.6'
+    assembly_name = 'GRCh38'
 
     # ID FROM CAN BE GUESSED IS None
     id_from = None
@@ -368,7 +368,7 @@ if __name__== '__main__':
     id_to = 'rs'
 
     # GFF3 FILE INPUT
-    p_gff3 = 'cow_bosTau6_UCSC_2009'
+    p_gff3 = '/test/GRCh38.p7.gff3'
     # new format => this is a file object
     f_gff3 = open(p_gff3)
 
