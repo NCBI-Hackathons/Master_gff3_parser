@@ -15,11 +15,7 @@ A summary of the **seqconv** commands is provided below.
 
 Command | Description
 ------------ | -------------
-guess | Infers file type
 convert | Converts sequence IDs
-help | Print help menu
-version | What version of SeqIDMapper
-contact | Feature requests, bugs, mailing lists
 
 Links to file format descriptions:
 [GFF3,](https://www.google.com/url?q=https://github.com/The-Sequence-Ontology/Specifications/blob/master/gff3.md&sa=D&ust=1490199000838000&usg=AFQjCNGJrt_qqhwtBufCdrc0sT28hntlVg)
