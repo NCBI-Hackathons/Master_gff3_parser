@@ -176,7 +176,7 @@ def get_mapper(p_assemblyreport, id_from=None, id_to='sn'):
             # user specified the id_from
             if id_from:
                 cur_id_from = sp[from_col]
-                d_from2to[cur_id_from] = [id_to, id_from]
+                d_from2to[cur_id_from.lower()] = [id_to, id_from]
 
 
 
@@ -191,7 +191,7 @@ def get_mapper(p_assemblyreport, id_from=None, id_to='sn'):
                     except:
                         cur_id_from = 'NA'
 
-                    d_from2to[cur_id_from] = [id_to, ite_id_from]
+                    d_from2to[cur_id_from.lower()] = [id_to, ite_id_from]
 
 
     return d_from2to
@@ -229,7 +229,7 @@ def convert(f_input, d_mapper, pos_col, guess=None, na=False):
         # TODO scan only if gff3?
         elif line.startswith('##sequence-region'):
             sp = line.strip().split()
-            idtoconvert = sp[1]
+            idtoconvert = sp[1].lower()
 
             # if can't mapp we skip the line
             try:
@@ -267,10 +267,10 @@ def convert(f_input, d_mapper, pos_col, guess=None, na=False):
         else:
             sp = line.strip().split('\t')
             # check if previous line has the same accession to avoid another dictionary search
-            if current_idfrom == line[:length_idfrom]:
+            if current_idfrom == line[:length_idfrom].lower():
                 idconverted = current_idto
             else:
-                idtoconvert = sp[pos_col] # pos_col is 0 based
+                idtoconvert = sp[pos_col].lower() # pos_col is 0 based
 
                 try:
                     idconverted, id_format = d_mapper[idtoconvert]
@@ -353,3 +353,40 @@ def converter(p_assemblyreport=None,\
 
     return None
 
+if __name__== '__main__':
+
+    ### TESTING AREA
+    #
+
+    # USER PROVIDE ASSEMBLY NAME
+    assembly_name = 'GCF_000003055.6'
+
+    # ID FROM CAN BE GUESSED IS None
+    id_from = None
+
+    # ID TO IS THE FORMAT CONVERTION DESIRED
+    id_to = 'rs'
+
+    # GFF3 FILE INPUT
+    p_gff3 = 'cow_bosTau6_UCSC_2009'
+    # new format => this is a file object
+    f_gff3 = open(p_gff3)
+
+    # Column number
+    pos_col = 0
+
+    # OUTPUT FILE
+    p_output = 'converted.gff3'
+
+
+    #### CORE
+    # GET ASSEMBLY REPORT
+    p_assembly_report = fetch_assembly_report(assembly_name)
+
+    #p_assembly_report='GCF_000001405.36_GRCh38.p10_assembly_report.txt'
+    converter(p_assemblyreport=p_assembly_report,\
+              f_input=f_gff3,\
+              pos_col=pos_col,\
+              id_from=id_from,\
+              id_to=id_to,
+              na=True)
