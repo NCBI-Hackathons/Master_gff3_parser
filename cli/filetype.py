@@ -38,7 +38,7 @@ def file_from_name(fname):
         Determine filetype from filename and return stream and id column
     """
     fname_l = fname.lower().replace(".gz", "")
-    if any([fname_l.endswith(x) for x in ['gff', 'gff3','bed','gtf']]):
+    if any([fname_l.endswith(x) for x in ['gff', 'gff3','bed','gtf', 'vcf']]):
         id_column = 0
     elif [fname_l.endswith(x) for x in ['sam','bam']]:
         id_column = 2
