@@ -5,7 +5,7 @@ Generic Feature Format version 3 (GFF3) is a file type that is commonly used in 
 
 SeqIDMapper was built in Python and runs from the command line. Users provide the input file, the specific reference genome, and the desired name of the output file.
 
-A summary of the *seqconv* commands is provided below.
+A summary of the **seqconv** commands is provided below.
 
 Command | Description
 ------------ | -------------
