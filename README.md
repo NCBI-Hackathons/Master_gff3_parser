@@ -3,6 +3,8 @@
 # SeqIDMapper (an amazing tool that does wonderful stuff)—Documentation
 Generic Feature Format version 3 (GFF3) is a file type that is commonly used in bioinformatic applications. Different institutions have varying naming conventions for the genomic identifier column in the GFF3 format. Therefore, there can be GFF3 files that use different seqids for the same genomic feature.  In addition, there are other file formats that also have sequence identifiers, such as GTF, BED, SAM, and BAM files. SeqIDMapper is an easy-to-use command line tool that can convert the genomic feature reference name for chromosomes, scaffolds, and contigs in different file formats to the corresponding seqid from NCBI’s RefSeq database.  GFF3 files are a common input into many different types of bioinformatics tools and pipelines, and SeqIDMapper provides naming consistency in these input files by converting the sequence feature IDs in the entire file to the desired ID format using a single command.
 
+![SeqIDMapper Workflow:](https://github.com/NCBI-Hackathons/Master_gff3_parser/blob/master/GFF3%20formats.png)
+Figure 1. Examples of NCBI, UCSC, and RefSeq GFF3 files.
 Sequence Identifier Conversion Examples:
 * Annotation with RefSeq ID to UCSC ID for use in  UCSC Genome Browser tracks
 * Genbank to RefSeq ID
@@ -39,5 +41,5 @@ python setup.py install
 ```
 
 ![SeqIDMapper Workflow:](https://github.com/NCBI-Hackathons/Master_gff3_parser/blob/master/SquidStream%20workflow.png)
-Figure 1. SquidStream workflow.
+Figure 2. SquidStream workflow.
 
