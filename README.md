@@ -38,6 +38,6 @@ OSX:
 python setup.py install
 ```
 
-![SeqIDMapper Workflow:](https://github.com/NCBI-Hackathons/Master_gff3_parser/blob/master/seqidmapper.png?raw=true)
-Figure 1. SeqIDMapper workflow.
-E
+![SeqIDMapper Workflow:](https://github.com/NCBI-Hackathons/Master_gff3_parser/blob/master/SquidStream%20workflow.png)
+Figure 1. SquidStream workflow.
+
