@@ -5,6 +5,7 @@ Generic Feature Format version 3 (GFF3) is a file type that is commonly used in 
 
 ![SeqIDMapper Workflow:](https://github.com/NCBI-Hackathons/Master_gff3_parser/blob/master/GFF3%20formats.png)
 Figure 1. Examples of NCBI, UCSC, and RefSeq GFF3 files.
+
 Sequence Identifier Conversion Examples:
 * Annotation with RefSeq ID to UCSC ID for use in  UCSC Genome Browser tracks
 * Genbank to RefSeq ID
