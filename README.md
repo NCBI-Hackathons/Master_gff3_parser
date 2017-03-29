@@ -1,9 +1,9 @@
 [![Coverage Status](https://coveralls.io/repos/github/NCBI-Hackathons/Master_gff3_parser/badge.svg?branch=master)](https://coveralls.io/github/NCBI-Hackathons/Master_gff3_parser?branch=master) [![Build Status](https://travis-ci.org/NCBI-Hackathons/Master_gff3_parser.svg?branch=master)](https://travis-ci.org/NCBI-Hackathons/Master_gff3_parser) [![](https://img.shields.io/badge/docs-latest-brightgreen.svg?style=flat)](http://seqconv.readthedocs.io/en/latest/)
 
-# SeqIDMapper (an amazing tool that does wonderful stuff)—Documentation
-Generic Feature Format version 3 (GFF3) is a file type that is commonly used in bioinformatic applications. Different institutions have varying naming conventions for the genomic identifier column in the GFF3 format. Therefore, there can be GFF3 files that use different seqids for the same genomic feature.  In addition, there are other file formats that also have sequence identifiers, such as GTF, BED, SAM, and BAM files. SeqIDMapper is an easy-to-use command line tool that can convert the genomic feature reference name for chromosomes, scaffolds, and contigs in different file formats to the corresponding seqid from NCBI’s RefSeq database.  GFF3 files are a common input into many different types of bioinformatics tools and pipelines, and SeqIDMapper provides naming consistency in these input files by converting the sequence feature IDs in the entire file to the desired ID format using a single command.
+# Squidstream (an amazing tool that does wonderful stuff)—Documentation
+Generic Feature Format version 3 (GFF3) is a file type that is commonly used in bioinformatic applications. Different institutions have varying naming conventions for the genomic identifier column in the GFF3 format. Therefore, there can be GFF3 files that use different seqids for the same genomic feature.  In addition, there are other file formats that also have sequence identifiers, such as GTF, BED, SAM, and BAM files. Squidstream is an easy-to-use command line tool that can convert the genomic feature reference name for chromosomes, scaffolds, and contigs in different file formats to the corresponding seqid from NCBI’s RefSeq database.  GFF3 files are a common input into many different types of bioinformatics tools and pipelines, and Squidstream provides naming consistency in these input files by converting the sequence feature IDs in the entire file to the desired ID format using a single command.
 
-![SeqIDMapper Workflow:](https://github.com/NCBI-Hackathons/Master_gff3_parser/blob/master/GFF3%20formats.png)
+![Squidstream Workflow:](https://github.com/NCBI-Hackathons/Master_gff3_parser/blob/master/GFF3%20formats.png)
 Figure 1. Examples of NCBI, UCSC, and RefSeq GFF3 files.
 
 Sequence Identifier Conversion Examples:
@@ -12,7 +12,7 @@ Sequence Identifier Conversion Examples:
 * RefSeq to Genbank ID
 
 
-SeqIDMapper was built in Python and runs from the command line. Users provide the input file, the specific reference genome, and the desired name of the output file.
+Squidstream was built in Python and runs from the command line. Users provide the input file, the specific reference genome, and the desired name of the output file.
 
 A summary of the **seqconv** commands is provided below.
 
@@ -41,7 +41,7 @@ OSX:
 python setup.py install
 ```
 
-![SeqIDMapper Workflow:](https://github.com/NCBI-Hackathons/Master_gff3_parser/blob/master/SquidStream%20workflow.png)
+![Squidstream Workflow:](https://github.com/NCBI-Hackathons/Master_gff3_parser/blob/master/SquidStream%20workflow.png)
 
 Figure 2. SquidStream workflow.
 
