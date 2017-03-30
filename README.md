@@ -8,7 +8,7 @@ Figure 1. Examples of NCBI, UCSC, and RefSeq GFF3 files.
 
 Sequence Identifier Conversion Examples:
 * Annotation with RefSeq ID to UCSC ID for use in  UCSC Genome Browser tracks
-* Genbank to RefSeq ID
+* Convert to NCBI ID to search KEGG GENES Database
 * RefSeq to Genbank ID
 
 
