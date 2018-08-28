@@ -21,7 +21,7 @@ Command | Description
 convert | Converts sequence IDs
 
 Links to file format descriptions:
-[GFF3,](https://www.google.com/url?q=https://github.com/The-Sequence-Ontology/Specifications/blob/master/gff3.md&sa=D&ust=1490199000838000&usg=AFQjCNGJrt_qqhwtBufCdrc0sT28hntlVg)
+[GFF3,](https://github.com/The-Sequence-Ontology/Specifications/blob/master/gff3.md)
 [SAM,](https://samtools.github.io/hts-specs/SAMv1.pdf)
 [BED,](http://useast.ensembl.org/info/website/upload/bed.html)
 [GFF/GTF](http://useast.ensembl.org/info/website/upload/gff.html)
